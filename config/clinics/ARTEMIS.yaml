@@ -1,0 +1,13 @@
+clinic_id: clinic_artemis
+source_systems: [ARTEMIS]
+schema_version: "1"
+extends: default
+
+# ARTEMIS lab reports occasionally include header rows (test_name/result literals).
+# The mapper filters those via skip_test_names without code changes.
+lab_report:
+  classifier: lab_report
+  skip_test_names:
+    - test_name
+    - Test Name
+    - TEST_NAME

@@ -1,0 +1,270 @@
+# Canonical test registry + aliases.
+# Gemini resolutions are appended at runtime under aliases (feedback loop).
+version: 1
+canonical_tests:
+  HAEMOGLOBIN:
+    aliases: [HAEMOGLOBIN, Haemoglobin, haemoglobin, Hb, HGB, aemoglobin, Hemoglobin, HEMOGLOBIN]
+    unit_family: concentration_blood
+    canonical_unit: g/dL
+    reference_range: { low: 13.0, high: 17.0 }
+    outlier_bounds: { low: 3.0, high: 25.0 }
+    numeric_expected: true
+
+  WHITE BLOOD CELL COUNT:
+    aliases: [WHITE BLOOD CELL COUNT, TOTAL WBC COUNT, Total WBC Count, WBC COUNT, TOTAL LEUCOCYTE COUNT (TLC), Total Leucocyte Count (TLC), TLC, WBC]
+    unit_family: cell_count
+    canonical_unit: cells/cu.mm
+    reference_range: { low: 4000, high: 11000 }
+    outlier_bounds: { low: 500, high: 100000 }
+    numeric_expected: true
+
+  Red Blood Cell Count (RBC):
+    aliases: [Red Blood Cell Count (RBC), RBC, RBC COUNT, Red Blood Cell Count]
+    unit_family: million_cell_count
+    canonical_unit: Million/cu.mm
+    reference_range: { low: 4.5, high: 5.5 }
+    outlier_bounds: { low: 1.0, high: 10.0 }
+    numeric_expected: true
+
+  Platelet Count:
+    aliases: [Platelet Count, PLATELET COUNT, Platelets]
+    unit_family: cell_count
+    canonical_unit: cells/cu.mm
+    reference_range: { low: 150000, high: 410000 }
+    outlier_bounds: { low: 10000, high: 1500000 }
+    numeric_expected: true
+
+  HEMATOCRIT:
+    aliases: [HEMATOCRIT, HAEMATOCRIT, Haematocrit (PCV), PCV, Packed Cell Volume (PCV)]
+    unit_family: percent
+    canonical_unit: "%"
+    reference_range: { low: 40, high: 50 }
+    outlier_bounds: { low: 10, high: 70 }
+    numeric_expected: true
+
+  MCV:
+    aliases: [MCV, Mean Cell Volume (MCV)]
+    unit_family: volume_fl
+    canonical_unit: fL
+    reference_range: { low: 83, high: 101 }
+    outlier_bounds: { low: 50, high: 140 }
+    numeric_expected: true
+
+  MCH:
+    aliases: [MCH]
+    unit_family: mass_pg
+    canonical_unit: pg
+    reference_range: { low: 27, high: 32 }
+    outlier_bounds: { low: 10, high: 50 }
+    numeric_expected: true
+
+  MCHC:
+    aliases: [MCHC]
+    unit_family: concentration_blood
+    canonical_unit: g/dL
+    reference_range: { low: 31.5, high: 34.5 }
+    outlier_bounds: { low: 20, high: 45 }
+    numeric_expected: true
+
+  NEUTROPHILS:
+    aliases: [NEUTROPHILS, Neutrophils]
+    unit_family: percent_or_abs
+    canonical_unit: "%"
+    reference_range: { low: 40, high: 80 }
+    outlier_bounds: { low: 0, high: 100 }
+    numeric_expected: true
+
+  LYMPHOCYTES:
+    aliases: [LYMPHOCYTES, Lymphocytes]
+    unit_family: percent_or_abs
+    canonical_unit: "%"
+    reference_range: { low: 20, high: 40 }
+    outlier_bounds: { low: 0, high: 100 }
+    numeric_expected: true
+
+  EOSINOPHILS:
+    aliases: [EOSINOPHILS, Eosinophils]
+    unit_family: percent_or_abs
+    canonical_unit: "%"
+    reference_range: { low: 1, high: 6 }
+    outlier_bounds: { low: 0, high: 100 }
+    numeric_expected: true
+
+  MONOCYTES:
+    aliases: [MONOCYTES, Monocytes]
+    unit_family: percent_or_abs
+    canonical_unit: "%"
+    reference_range: { low: 2, high: 10 }
+    outlier_bounds: { low: 0, high: 100 }
+    numeric_expected: true
+
+  BASOPHILS:
+    aliases: [BASOPHILS, Basophils]
+    unit_family: percent_or_abs
+    canonical_unit: "%"
+    reference_range: { low: 0, high: 2 }
+    outlier_bounds: { low: 0, high: 20 }
+    numeric_expected: true
+
+  CREATININE:
+    aliases: [CREATININE, Creatinine, SERUM CREATININE, Serum Creatinine, CREATININE, SERUM]
+    unit_family: concentration_chem
+    canonical_unit: mg/dL
+    reference_range: { low: 0.5, high: 1.2 }
+    outlier_bounds: { low: 0.1, high: 20.0 }
+    numeric_expected: true
+
+  Urea Nitrogen (BUN):
+    aliases: [Urea Nitrogen (BUN), BLOOD UREA NITROGEN, UREA, Blood Urea, BUN]
+    unit_family: concentration_chem
+    canonical_unit: mg/dL
+    reference_range: { low: 8.0, high: 23.0 }
+    outlier_bounds: { low: 1.0, high: 150.0 }
+    numeric_expected: true
+
+  URIC ACID:
+    aliases: [URIC ACID, Uric Acid, URIC ACID, SERUM]
+    unit_family: concentration_chem
+    canonical_unit: mg/dL
+    reference_range: { low: 3.5, high: 8.5 }
+    outlier_bounds: { low: 0.5, high: 20.0 }
+    numeric_expected: true
+
+  SODIUM:
+    aliases: [SODIUM, Sodium, Na+, Sodium (Na+)]
+    unit_family: electrolyte
+    canonical_unit: mmol/L
+    reference_range: { low: 135, high: 145 }
+    outlier_bounds: { low: 100, high: 180 }
+    numeric_expected: true
+
+  POTASSIUM:
+    aliases: [POTASSIUM, Potassium, K+, Potassium (K+)]
+    unit_family: electrolyte
+    canonical_unit: mmol/L
+    reference_range: { low: 3.5, high: 5.1 }
+    outlier_bounds: { low: 1.5, high: 9.0 }
+    numeric_expected: true
+
+  CHLORIDE:
+    aliases: [CHLORIDE, Chloride, Chloride (CI-), Cl-]
+    unit_family: electrolyte
+    canonical_unit: mmol/L
+    reference_range: { low: 98, high: 107 }
+    outlier_bounds: { low: 70, high: 140 }
+    numeric_expected: true
+
+  CALCIUM:
+    aliases: [CALCIUM, Calcium, Serum Calcium, Ca2+ (Calcium)]
+    unit_family: concentration_chem
+    canonical_unit: mg/dL
+    reference_range: { low: 8.4, high: 10.2 }
+    outlier_bounds: { low: 4.0, high: 16.0 }
+    numeric_expected: true
+
+  ALBUMIN:
+    aliases: [ALBUMIN, Albumin, ALBUMIN, SERUM]
+    unit_family: concentration_protein
+    canonical_unit: g/dL
+    reference_range: { low: 3.5, high: 5.0 }
+    outlier_bounds: { low: 1.0, high: 8.0 }
+    numeric_expected: true
+
+  GLOBULIN:
+    aliases: [GLOBULIN, Globulin, Globulin (Calculated)]
+    unit_family: concentration_protein
+    canonical_unit: g/dL
+    reference_range: { low: 2.0, high: 3.5 }
+    outlier_bounds: { low: 0.5, high: 8.0 }
+    numeric_expected: true
+
+  TOTAL PROTEIN:
+    aliases: [TOTAL PROTEIN, PROTEIN, TOTAL, Total protein]
+    unit_family: concentration_protein
+    canonical_unit: g/dL
+    reference_range: { low: 6.3, high: 8.2 }
+    outlier_bounds: { low: 2.0, high: 12.0 }
+    numeric_expected: true
+
+  A/G RATIO:
+    aliases: [A/G RATIO, Albumin/Globulin Ratio (Calculated), AG Ratio]
+    unit_family: ratio
+    canonical_unit: ratio
+    reference_range: { low: 1.0, high: 2.5 }
+    outlier_bounds: { low: 0.1, high: 5.0 }
+    numeric_expected: true
+
+  ALANINE AMINOTRANSFERASE:
+    aliases: [ALANINE AMINOTRANSFERASE, ALT (SGPT), ALT, SGPT]
+    unit_family: enzyme
+    canonical_unit: U/L
+    reference_range: { low: 0, high: 50 }
+    outlier_bounds: { low: 0, high: 2000 }
+    numeric_expected: true
+
+  ASPARTATE AMINOTRANSFERASE:
+    aliases: [ASPARTATE AMINOTRANSFERASE, AST (SGOT), AST, SGOT]
+    unit_family: enzyme
+    canonical_unit: U/L
+    reference_range: { low: 17, high: 59 }
+    outlier_bounds: { low: 0, high: 2000 }
+    numeric_expected: true
+
+  ALKALINE PHOSPHATASE:
+    aliases: [ALKALINE PHOSPHATASE, Alkaline Phosphatase (ALP), ALP]
+    unit_family: enzyme
+    canonical_unit: U/L
+    reference_range: { low: 38, high: 126 }
+    outlier_bounds: { low: 0, high: 2000 }
+    numeric_expected: true
+
+  C-REACTIVE PROTEIN:
+    aliases: [C-REACTIVE PROTEIN, C-REACTIVE PROTEIN (CRP), CRP]
+    unit_family: concentration_chem
+    canonical_unit: mg/L
+    reference_range: { low: 0, high: 5 }
+    outlier_bounds: { low: 0, high: 500 }
+    numeric_expected: true
+
+  Procalcitonin:
+    aliases: [Procalcitonin, PROCALCITONIN, PROCALCITONIN (PCT), PCT]
+    unit_family: concentration_chem
+    canonical_unit: ng/mL
+    reference_range: { low: 0, high: 0.5 }
+    outlier_bounds: { low: 0, high: 100 }
+    numeric_expected: true
+
+  Estimated Glomerular Filtration Rate (eGFR):
+    aliases: [Estimated Glomerular Filtration Rate (eGFR), eGFR, eGFR - ESTIMATED GLOMERULAR FILTRATION RATE, FILTRATION RATE, eGFR - ESTIMATED GLOMERULAR]
+    unit_family: egfr
+    canonical_unit: mL/min/1.73m2
+    reference_range: { low: 90, high: 120 }
+    outlier_bounds: { low: 1, high: 200 }
+    numeric_expected: true
+
+  GLUCOSE:
+    aliases: [GLUCOSE, Blood Glucose, Random Blood Sugar, BSR]
+    unit_family: concentration_chem
+    canonical_unit: mg/dL
+    reference_range: { low: 70, high: 140 }
+    outlier_bounds: { low: 10, high: 800 }
+    numeric_expected: true
+
+  AMYLASE:
+    aliases: [AMYLASE]
+    unit_family: enzyme
+    canonical_unit: U/L
+    reference_range: { low: 30, high: 115 }
+    outlier_bounds: { low: 0, high: 5000 }
+    numeric_expected: true
+
+  LIPASE:
+    aliases: [LIPASE, LIPASE,SERUM]
+    unit_family: enzyme
+    canonical_unit: U/L
+    reference_range: { low: 23, high: 300 }
+    outlier_bounds: { low: 0, high: 10000 }
+    numeric_expected: true
+
+# Runtime Gemini / NLP hits get written here by the AI worker
+learned_aliases: {}

@@ -1,0 +1,101 @@
+# Unit aliases → canonical unit, with optional multiplicative conversion factors.
+# factor: multiply source value by this to get canonical value.
+version: 1
+unit_families:
+  concentration_blood:
+    canonical: g/dL
+    aliases:
+      g/dL: 1.0
+      g/dl: 1.0
+      gm/dL: 1.0
+      gm/dl: 1.0
+      # g/L → g/dL
+      g/L: 0.1
+      g/l: 0.1
+
+  concentration_chem:
+    canonical: mg/dL
+    aliases:
+      mg/dL: 1.0
+      mg/dl: 1.0
+      # mg/L → mg/dL
+      mg/L: 0.1
+      mg/l: 0.1
+
+  concentration_protein:
+    canonical: g/dL
+    aliases:
+      g/dL: 1.0
+      g/dl: 1.0
+      gm/dL: 1.0
+      gm/dl: 1.0
+
+  cell_count:
+    canonical: cells/cu.mm
+    aliases:
+      cells/cu.mm: 1.0
+      Cells/cu.mm: 1.0
+      cell/cu.mm: 1.0
+      cells/cumm: 1.0
+      /cu.mm: 1.0
+      # mil/cu.mm often misused; treat as million → *1e6 when value < 1000
+      mil/cu.mm: 1000000.0
+      Million/cu.mm: 1000000.0
+      million/cumm: 1000000.0
+      lac/cmm: 100000.0
+      lakhs/cumm: 100000.0
+
+  million_cell_count:
+    canonical: Million/cu.mm
+    aliases:
+      Million/cu.mm: 1.0
+      mil/cu.mm: 1.0
+      million/cumm: 1.0
+      # cells/cu.mm → millions
+      cells/cu.mm: 0.000001
+      Cells/cu.mm: 0.000001
+
+  percent:
+    canonical: "%"
+    aliases:
+      "%": 1.0
+      percent: 1.0
+      pct: 1.0
+
+  volume_fl:
+    canonical: fL
+    aliases:
+      fL: 1.0
+      FL: 1.0
+      fl: 1.0
+      FI: 1.0
+      IL: 1.0
+
+  mass_pg:
+    canonical: pg
+    aliases:
+      pg: 1.0
+
+  electrolyte:
+    canonical: mmol/L
+    aliases:
+      mmol/L: 1.0
+      mEq/L: 1.0
+
+  enzyme:
+    canonical: U/L
+    aliases:
+      U/L: 1.0
+      IU/L: 1.0
+
+  egfr:
+    canonical: mL/min/1.73m2
+    aliases:
+      mL/min/1.73m2: 1.0
+      ml/min/1.73m²: 1.0
+
+  ratio:
+    canonical: ratio
+    aliases:
+      ratio: 1.0
+      Ratio: 1.0

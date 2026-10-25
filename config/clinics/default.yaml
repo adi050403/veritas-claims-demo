@@ -1,0 +1,62 @@
+# Default clinic mapping — used when source_system has no dedicated config.
+# Paths are JSONPath-like dotted paths relative to each responseDetails item.
+clinic_id: default
+source_systems: ["*"]
+schema_version: "1"
+
+envelope:
+  trace_id: "$.traceId"
+  status_code: "$.statusCode"
+  document_id: "$.data.documentId"
+  correlation_id: "$.data.correlationId"
+  meta_details: "$.data.metaDetails"
+  response_details: "$.data.responseDetails"
+
+lab_report:
+  classifier: lab_report
+  basic_info:
+    patient_name: "$.data.basic_info.patient_name"
+    age: "$.data.basic_info.age"
+    gender: "$.data.basic_info.gender"
+    uhid: "$.data.basic_info.uhid"
+    hospital_name: "$.data.basic_info.lab_or_hospital_name"
+    bill_date: "$.data.basic_info.bill_date"
+    reports_date: "$.data.basic_info.reports_date"
+  tests_path: "$.data.report_details"
+  test_fields:
+    test_name: test_name
+    result: result
+    unit: unit
+    range: range
+    page_no: page_no
+    source_analytics: test_analytics
+
+discharge_summary:
+  classifier: discharge_summary
+  fields:
+    patient_name: "$.data.patientName"
+    age: "$.data.age"
+    gender: "$.data.gender"
+    hospital_name: "$.data.hospitalName"
+    hospital_address: "$.data.hospitalAddress"
+    doctor_name: "$.data.doctorName"
+    admission_date: "$.data.admissionDate"
+    discharge_date: "$.data.dischargeDate"
+    diagnosis: "$.data.diagnosis"
+    brief_history: "$.data.briefHistory"
+    general_examinations: "$.data.generalExaminations"
+    recommendations: "$.data.recommendations"
+    ward: "$.data.ward"
+    post_discharge_advice: "$.data.postDischargeAdvice"
+    course_during_hospitalisation: "$.data.courseDuringHospitalisation"
+    medicine_injections_investigation: "$.data.medicineInjectionsInvestigation"
+  medications_path: "$.data.dischargeMedications"
+  medication_fields:
+    medicine: medicine
+    dose: dose
+    frequency: frequency
+    type: type
+
+dedup:
+  # Content-hash over these envelope fields (+ raw body hash)
+  keys: [document_id, correlation_id]

@@ -1,0 +1,39 @@
+# Brand → generic mapping (optional FR-2.6). Extensible without code changes.
+version: 1
+brand_to_generic:
+  "Tab. miso": Misoprostol
+  "TAB MEDICIP": Ciprofloxacin
+  "TAB DOLO 650": Paracetamol
+  "TAB. DOLO - 650 mg": Paracetamol
+  "TAB. DOLO": Paracetamol
+  "Inj. PCM": Paracetamol
+  "Inj. Pan": Pantoprazole
+  "Cap. Pan D": Pantoprazole + Domperidone
+  "CAP. PAN D": Pantoprazole + Domperidone
+  "CAP. PAN 40": Pantoprazole
+  "TAB. PAN - 40": Pantoprazole
+  "TAB. PAN - 40 (before breakfast)": Pantoprazole
+  "Inj. Pantocid 40 mg": Pantoprazole
+  "TAB CEFTUM 500 MG": Cefuroxime
+  "TAB. CEFTAS- 400": Cefixime
+  "TAB. CEFTAS- 400 (after food)": Cefixime
+  "TAB. AZITHRAL 500 mg": Azithromycin
+  "Inj. Emeset": Ondansetron
+  "Inj. Bucsopan": Hyoscine butylbromide
+  "Inj. Dynapar": Diclofenac
+  "Tab. Diclomol": Diclofenac + Paracetamol
+  "TAB. ULTRACET": Tramadol + Paracetamol
+  "DROTIN": Drotaverine
+  "Inj. Fortwin": Pentazocine
+  "Inj. Phenargan": Promethazine
+  "Inj. Synto": Oxytocin
+  "Cap. Vizylac": Probiotic (Lactic acid bacillus)
+  "ECO NORM SACHET": Saccharomyces boulardii
+  "Econorm Sachet": Saccharomyces boulardii
+  "SYP DUPHALAC": Lactulose
+  "SYP-LACTOLOO2": Lactulose
+  "POWDER NATUROLAX": Laxative powder
+  "TAB. ZINCOVIT": Multivitamin + Zinc
+  "SYP- BANDY PLUS 10": Albendazole + Ivermectin
+  "Syp Bandy plus": Albendazole + Ivermectin
+  "Inj. Supacef": Cefuroxime

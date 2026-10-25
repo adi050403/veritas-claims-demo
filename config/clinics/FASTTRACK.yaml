@@ -1,0 +1,10 @@
+# Clinic/source override for FASTTRACK — inherits default field paths.
+# Adding a new clinic = copy this file and adjust paths only.
+clinic_id: clinic_fasttrack
+source_systems: [FASTTRACK]
+schema_version: "1"
+extends: default
+
+# Example of a non-breaking override (same paths today; ready for clinic drift)
+lab_report:
+  classifier: lab_report
