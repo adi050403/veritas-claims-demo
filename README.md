@@ -63,9 +63,19 @@ Exact registry → `rapidfuzz` → NLP token similarity → Gemini (`pending_ai`
 | BigQuery | `veritas-claims-512706.veritas_claims_demo.canonical_records` |
 
 ```powershell
-# Re-trigger pipeline
-curl.exe -X POST "https://veritas-pipeline-233971633808.us-central1.run.app/run" -H "Content-Type: application/json" -d "{}"
+# Preferred
+curl.exe -X POST "https://veritas-pipeline-233971633808.us-central1.run.app/run" `
+  -H "Authorization: Bearer $(gcloud auth print-identity-token)" `
+  -H "Content-Type: application/json" -d "{}"
+
+# Cloud Run Console "Test" panel (POST /) also works — body may be {"name":"Developer"}
+curl.exe -X POST "https://veritas-pipeline-233971633808.us-central1.run.app/" `
+  -H "Authorization: Bearer $(gcloud auth print-identity-token)" `
+  -H "Content-Type: application/json" `
+  -d "{\"name\": \"Developer\"}"
 ```
+
+`files_ok: 0` with `files_total: 5` usually means samples already completed (idempotent). Clear `gs://…/state/progress.json` to force a full reprocess.
 
 Verified cloud run: **5 files → 442 rows** (362 lab / 74 medication / 6 discharge).
 
