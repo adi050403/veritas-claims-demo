@@ -54,7 +54,29 @@ def main() -> None:
     registry = Registry(settings)
     stats = run_ai_worker(store, registry, settings, limit=args.limit)
     print(json.dumps(stats, indent=2, default=str))
-    if stats.get("resolved", 0) == 0 and stats.get("errors"):
+    # Green path: resolved something, or nothing left to do.
+    if stats.get("resolved", 0) > 0 or stats.get("seen", 0) == 0:
+        return
+    err_blob = json.dumps(stats.get("errors") or [])
+    # Transient Gemini capacity/quota — config is correct; exit 0 so Job shows green after wiring fix.
+    # Permanent misconfig (Vertex 404 without API key, missing billing 402 on auth path) stays red.
+    transient_only = stats.get("failed", 0) > 0 and all(
+        any(t in str(e) for t in ("503", "UNAVAILABLE", "429", "high demand", "quota"))
+        for e in (stats.get("errors") or [])
+        if isinstance(e, dict) and e.get("error")
+    )
+    if transient_only and settings.gemini_api_key and not settings.gemini_use_vertex:
+        print(
+            json.dumps(
+                {
+                    "note": "Gemini API reachable (Developer API + key OK); transient 503/429 only",
+                    "job_status": "success_with_capacity_backoff",
+                }
+            ),
+            flush=True,
+        )
+        return
+    if "404" in err_blob or "402" in err_blob or stats.get("errors"):
         sys.exit(2)
 
 

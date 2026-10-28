@@ -11,5 +11,5 @@ COPY scripts ./scripts
 ENV PYTHONPATH=/app/src
 ENV STORAGE_BACKEND=gcp
 
-# Cloud Run Job entrypoint
-CMD ["python", "scripts/run_ai_worker.py", "--limit", "100"]
+# Cloud Run Job entrypoint — small batch keeps free-tier Gemini quota healthy
+CMD ["python", "scripts/run_ai_worker.py", "--limit", "5", "--backend", "gcp"]

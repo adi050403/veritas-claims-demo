@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from typing import Any
 
 from veritas.registry import Registry
@@ -10,6 +11,14 @@ from veritas.settings import Settings, get_settings
 from veritas.storage.db import RecordStore
 
 log = logging.getLogger("veritas.gemini")
+
+# Prefer configured model first; fall back when Vertex/API has capacity issues.
+_MODEL_FALLBACKS = (
+    "gemini-3.7-flash",
+    "gemini-3.5-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-flash-lite-latest",
+)
 
 
 RESOLUTION_SCHEMA = {
@@ -85,42 +94,59 @@ def resolve_with_gemini(
         "Return JSON only with keys canonical_name, confidence (0-1), rationale, is_new_canonical."
     )
 
-    model = settings.gemini_model
-    # Prefer JSON MIME type; schema enforcement can hang/fail on some models.
+    models: list[str] = []
+    for m in [settings.gemini_model, *_MODEL_FALLBACKS]:
+        if m and m not in models:
+            models.append(m)
+
     config_kwargs: dict[str, Any] = {
         "temperature": 0,
         "response_mime_type": "application/json",
         "max_output_tokens": 1024,
     }
-    # Disable "thinking" budgets when supported — they truncate JSON on free tier.
     try:
         config_kwargs["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
     except Exception:
         pass
 
-    try:
-        response = client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=types.GenerateContentConfig(**config_kwargs),
-        )
-    except Exception as exc:
-        log.error(
-            "Gemini generate_content failed (%s / %s): %s",
-            mode,
-            model,
-            str(exc)[:500],
-        )
-        raise
+    last_exc: Exception | None = None
+    for model in models:
+        for attempt in range(1, 4):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(**config_kwargs),
+                )
+                text = getattr(response, "text", None) or ""
+                parsed = _parse_json_payload(text)
+                if not parsed:
+                    log.error("Gemini returned non-JSON (%s): %s", model, text[:300])
+                    break
+                parsed["_gemini_mode"] = mode
+                parsed["_gemini_model"] = model
+                return parsed
+            except Exception as exc:
+                last_exc = exc
+                msg = str(exc)
+                transient = any(x in msg for x in ("503", "UNAVAILABLE", "429", "high demand", "RESOURCE_EXHAUSTED"))
+                log.warning(
+                    "Gemini attempt failed (%s / %s attempt %s): %s",
+                    mode,
+                    model,
+                    attempt,
+                    msg[:300],
+                )
+                if transient and attempt < 3:
+                    time.sleep(2 * attempt)
+                    continue
+                if transient:
+                    break  # try next model
+                raise
 
-    text = getattr(response, "text", None) or ""
-    parsed = _parse_json_payload(text)
-    if not parsed:
-        log.error("Gemini returned non-JSON: %s", text[:500])
-        return None
-    parsed["_gemini_mode"] = mode
-    parsed["_gemini_model"] = model
-    return parsed
+    if last_exc:
+        raise last_exc
+    return None
 
 
 def _parse_json_payload(text: str) -> dict[str, Any] | None:
