@@ -1,0 +1,318 @@
+<mxfile host="app.diagrams.net" pages="3">
+  <diagram id="p1" name="1 - Solution Architecture">
+    <mxGraphModel dx="858" dy="468" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1550" pageHeight="920" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="1 2" parent="1" style="text;html=1;whiteSpace=wrap;verticalAlign=top;align=left;fontSize=12;fontSize=12;" value="&lt;b&gt;Veritas Claims – Medical Data Standardisation Pipeline (GCP · Python)&lt;/b&gt;&lt;br&gt;Event-driven micro-batch · raw JSON kept (schema-on-read) + curated long table (schema-on-write) · config-driven, zero-code clinic onboarding" vertex="1">
+          <mxGeometry height="55" width="1400" x="20" y="5" as="geometry" />
+        </mxCell>
+        <mxCell id="1 3" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;align=left;spacing=6;" value="&lt;b&gt;Key design choices&lt;/b&gt;&lt;br&gt;• Micro-batch, event-driven (not true streaming)&lt;br&gt;• Raw JSON retained → full audit trail&lt;br&gt;• Config in Git: new clinic = YAML PR, no deploy&lt;br&gt;• Gemini only for names the cascade cannot resolve; results cached" vertex="1">
+          <mxGeometry height="110" width="380" x="20" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1 4" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;CONFIG LAYER (versioned)&lt;/b&gt;&lt;br&gt;Git repo (YAML): source mappings · test registry (aliases, units, ranges, plausible bounds) · medicines · dedup keys&lt;br&gt;Cloud Build → GCS config bucket · workers load &amp; cache by version" vertex="1">
+          <mxGeometry height="110" width="330" x="420" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1 5" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;Vertex AI – Gemini Flash&lt;/b&gt;&lt;br&gt;Unresolved test / medicine names only&lt;br&gt;Batched · JSON-schema constrained&lt;br&gt;Constrained to canonical list · cached" vertex="1">
+          <mxGeometry height="110" width="230" x="780" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1 6" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;opacity=45;dashed=1;" value="&lt;b&gt;SOURCES&lt;/b&gt;" vertex="1">
+          <mxGeometry height="440" width="170" x="10" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="1 7" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;500+ Clinics / Labs&lt;/b&gt;&lt;br&gt;JSON via upstream extraction&lt;br&gt;(source_system e.g. FASTTRACK)&lt;br&gt;SFTP · signed-URL upload" vertex="1">
+          <mxGeometry height="130" width="150" x="20" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="1 8" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;opacity=45;dashed=1;" value="&lt;b&gt;1 · INGESTION&lt;/b&gt;" vertex="1">
+          <mxGeometry height="440" width="210" x="190" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="1 9" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;GCS raw bucket&lt;/b&gt;&lt;br&gt;/{clinic_id}/{yyyy-mm-dd}/file.json&lt;br&gt;immutable · lifecycle rules" vertex="1">
+          <mxGeometry height="90" width="180" x="205" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="1 10" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Pub/Sub: file-arrived&lt;/b&gt;&lt;br&gt;GCS object-finalize notification&lt;br&gt;buffers bursts · at-least-once" vertex="1">
+          <mxGeometry height="80" width="180" x="205" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="1 11" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;b&gt;Pub/Sub DLQ&lt;/b&gt;&lt;br&gt;after N retries" vertex="1">
+          <mxGeometry height="50" width="180" x="205" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="1 12" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;Cloud Scheduler&lt;/b&gt;&lt;br&gt;periodic sweep for missed files (batch mode)" vertex="1">
+          <mxGeometry height="70" width="180" x="205" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="1 13" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;opacity=45;dashed=1;" value="&lt;b&gt;2 · PROCESSING – Cloud Run (Python), autoscaled&lt;/b&gt;" vertex="1">
+          <mxGeometry height="440" width="330" x="420" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="1 14" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;1 Parse &amp; envelope check&lt;/b&gt;&lt;br&gt;malformed JSON → dead-letter" vertex="1">
+          <mxGeometry height="55" width="295" x="438" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="1 15" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;2 Dedup&lt;/b&gt;&lt;br&gt;payload content-hash (configurable)" vertex="1">
+          <mxGeometry height="55" width="295" x="438" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="1 16" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;3 Config-driven field mapping&lt;/b&gt;&lt;br&gt;source_system + classifier + version" vertex="1">
+          <mxGeometry height="55" width="295" x="438" y="365" as="geometry" />
+        </mxCell>
+        <mxCell id="1 17" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;4 Standardise&lt;/b&gt;&lt;br&gt;test names (exact→fuzzy→Gemini) · numeric · units · dates/age/gender · medicines" vertex="1">
+          <mxGeometry height="55" width="295" x="438" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="1 18" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;5 Validate&lt;/b&gt;&lt;br&gt;range · outlier · unit-family check · Test_Analytics" vertex="1">
+          <mxGeometry height="55" width="295" x="438" y="495" as="geometry" />
+        </mxCell>
+        <mxCell id="1 19" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;6 Write&lt;/b&gt;&lt;br&gt;micro-batch → BigQuery staging, MERGE" vertex="1">
+          <mxGeometry height="55" width="295" x="438" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="1 20" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=12;fillColor=#ffe6cc;strokeColor=#d79b00;opacity=45;dashed=1;" value="&lt;b&gt;3 · STORAGE&lt;/b&gt;" vertex="1">
+          <mxGeometry height="440" width="280" x="1000" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="1 21" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;b&gt;BigQuery – analytics store&lt;/b&gt;&lt;br&gt;staging → MERGE → curated&lt;br&gt;lab_results + medications (long, 50-col schema)&lt;br&gt;partition reports_date · cluster test_name_canonical, claim_no&lt;br&gt;report_wide VIEW (5 cols/test)" vertex="1">
+          <mxGeometry height="135" width="260" x="1010" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="1 22" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;b&gt;Cloud SQL (Postgres) – control plane&lt;/b&gt;&lt;br&gt;processed_docs (hashes) · alias store&lt;br&gt;review queue · pipeline_runs · clinic stats" vertex="1">
+          <mxGeometry height="110" width="260" x="1010" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="1 23" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;b&gt;GCS quarantine + BQ dead_letter&lt;/b&gt;&lt;br&gt;raw file + stage + reason + correlation_id" vertex="1">
+          <mxGeometry height="90" width="260" x="1010" y="535" as="geometry" />
+        </mxCell>
+        <mxCell id="1 24" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;b&gt;4 · OPS UI&lt;/b&gt;&lt;br&gt;Cloud Run&lt;br&gt;(Streamlit / FastAPI)&lt;br&gt;IAP auth&lt;br&gt;&lt;br&gt;Dashboard · flagged queue · clinic quality · record inspector (raw ↔ standardised)" vertex="1">
+          <mxGeometry height="230" width="200" x="1310" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="1 25" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;opacity=45;dashed=1;" value="&lt;b&gt;5 · OBSERVABILITY &amp; GOVERNANCE&lt;/b&gt;" vertex="1">
+          <mxGeometry height="240" width="1090" x="140" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="1 26" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Governance&lt;/b&gt;&lt;br&gt;IAM least-privilege · CMEK&lt;br&gt;DLP / PII tokenisation hook&lt;br&gt;lineage: source_file, clinic, ingested_at, config_version" vertex="1">
+          <mxGeometry height="130" width="190" x="205" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="1 27" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Cloud Logging&lt;/b&gt;&lt;br&gt;structured JSON logs&lt;br&gt;correlation_id on every step" vertex="1">
+          <mxGeometry height="100" width="150" x="420" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="1 28" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Cloud Monitoring&lt;/b&gt;&lt;br&gt;throughput · error rate&lt;br&gt;oldest-unacked age (lag)&lt;br&gt;ALERT: error &gt;1% · lag &gt; SLA" vertex="1">
+          <mxGeometry height="100" width="190" x="600" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="1 29" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Slack / PagerDuty&lt;/b&gt;&lt;br&gt;on-call alerts" vertex="1">
+          <mxGeometry height="100" width="140" x="820" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="1 30" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="&lt;b&gt;Reprocessing&lt;/b&gt;&lt;br&gt;fix config → replay job re-publishes&lt;br&gt;quarantined files (idempotent MERGE)" vertex="1">
+          <mxGeometry height="100" width="270" x="1000" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="1 31" edge="1" parent="1" source="1 7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" target="1 9" value="land by clinic/date">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 32" edge="1" parent="1" source="1 9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" target="1 10" value="finalize event">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 33" edge="1" parent="1" source="1 12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;dashed=1;" target="1 10" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 34" edge="1" parent="1" source="1 10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#b85450;fontSize=10;dashed=1;" target="1 11" value="max retries">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 35" edge="1" parent="1" source="1 10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="1 14" value="push">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 36" edge="1" parent="1" source="1 14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="1 15" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 37" edge="1" parent="1" source="1 15" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="1 16" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 38" edge="1" parent="1" source="1 16" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="1 17" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 39" edge="1" parent="1" source="1 17" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="1 18" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 40" edge="1" parent="1" source="1 18" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="1 19" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 41" edge="1" parent="1" source="1 4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;" target="1 13" value="load vN · cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 42" edge="1" parent="1" source="1 5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.8;exitY=1;entryX=1;entryY=0.5;startArrow=block;" target="1 17" value="unresolved only">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="964" y="470" />
+              <mxPoint x="733" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1 43" edge="1" parent="1" source="1 19" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="1 21" value="load + MERGE">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="598" />
+              <mxPoint x="840" y="302" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1 44" edge="1" parent="1" source="1 15" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;" target="1 22" value="hash lookup">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="733" y="322" />
+              <mxPoint x="890" y="322" />
+              <mxPoint x="890" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1 45" edge="1" parent="1" source="1 13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#b85450;fontSize=10;exitX=1;exitY=0.97;entryX=0;entryY=0.5;dashed=1;" target="1 23" value="failures: per-file, never block others">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="627" />
+              <mxPoint x="870" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1 46" edge="1" parent="1" source="1 24" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0;exitY=0.2;entryX=1;entryY=0.5;" target="1 21" value="reads">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 47" edge="1" parent="1" source="1 24" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0;exitY=0.7;entryX=1;entryY=0.5;" target="1 22" value="reads · writes review decisions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 48" edge="1" parent="1" source="1 13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.3;exitY=1;entryX=0.5;entryY=0;" target="1 27" value="logs + metrics">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 49" edge="1" parent="1" source="1 27" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" target="1 28" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 50" edge="1" parent="1" source="1 28" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" target="1 29" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1 51" edge="1" parent="1" source="1 23" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="1 30" value="fix → replay">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="p2" name="2 - Name Resolution (Fuzzy + Gemini)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2 52" value="&lt;b&gt;Test-name resolution cascade – cheapest method first&lt;/b&gt;&lt;br&gt;Goal: ≥98% of variants resolved (NFR-4.1). Gemini is the last resort and every answer is cached, so LLM calls scale with NEW unique variants, not with 30M rows/day." style="text;html=1;whiteSpace=wrap;verticalAlign=top;align=left;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="5" width="1400" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="2 53" value="&lt;b&gt;Evidence from the provided samples (stand-in fuzzy scorer)&lt;/b&gt;&lt;br&gt;✔ fuzzy resolves OCR-truncated names: &quot;aemoglobin&quot; → Hemoglobin (95) · &quot;tal WBC Count&quot; → White Blood Cell Count (93) · &quot;atelet Count&quot; → Platelet Count (92)&lt;br&gt;✘ fuzzy fails / mis-matches when the name is not in the dictionary: &quot;lean Corp Volume MCV&quot; (39 → Calcium), &quot;Neutrophils&quot; (32 → CRP), &quot;Alkaline Phosphatase&quot; (55 → ALT), &quot;DW-SD&quot; (20 → Sodium)&lt;br&gt;→ Seed dictionary has only 19 canonicals (no MCV/MCH/RDW/ALP) and &quot;Hb&quot; appears under two canonicals ⇒ need a merged registry + Gemini for the long tail." style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="70" width="1400" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="2 54" value="&lt;b&gt;Raw test_name&lt;/b&gt;&lt;br&gt;e.g. &quot;lean Corp Volume MCV&quot;" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="300" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2 55" value="&lt;b&gt;1 Normalise&lt;/b&gt;&lt;br&gt;lowercase · strip punctuation, units, brackets" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="300" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2 56" value="&lt;b&gt;2 Exact alias lookup&lt;/b&gt;&lt;br&gt;config registry + alias store&lt;br&gt;method=exact · conf 1.0" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="380" y="300" width="170" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2 57" value="&lt;b&gt;3 Fuzzy match (rapidfuzz)&lt;/b&gt;&lt;br&gt;score ≥ 90 AND unit/category guard&lt;br&gt;method=fuzzy · conf=score" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="580" y="300" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2 58" value="&lt;b&gt;4 Gemini Flash (batched)&lt;/b&gt;&lt;br&gt;pick from canonical list or &quot;NONE&quot;&lt;br&gt;JSON schema · returns confidence" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="800" y="300" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2 59" value="&lt;b&gt;conf ≥ 0.85?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#ffffff;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="290" width="120" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="2 60" value="&lt;b&gt;Review queue (Ops UI)&lt;/b&gt;&lt;br&gt;human approves / edits" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="300" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2 61" value="&lt;b&gt;RESOLVED&lt;/b&gt;&lt;br&gt;test_name_canonical + normalization_method + normalization_confidence&lt;br&gt;write alias to alias store (Cloud SQL) → next occurrence is an exact hit (cost → ~0)" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="380" y="520" width="770" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="2 62" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="2 54" target="2 55">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 63" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="2 55" target="2 56">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 64" value="miss" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="2 56" target="2 57">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 65" value="miss" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="2 57" target="2 58">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 66" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="2 58" target="2 59">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 67" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="2 59" target="2 60">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 68" value="hit" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.1;entryY=0;" edge="1" parent="1" source="2 56" target="2 61">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 69" value="hit" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.35;entryY=0;" edge="1" parent="1" source="2 57" target="2 61">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 70" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=0.9;entryY=0;" edge="1" parent="1" source="2 59" target="2 61">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2 71" value="approved → alias added to config" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;exitX=0.5;exitY=1;entryX=1;entryY=0.5;dashed=1;" edge="1" parent="1" source="2 60" target="2 61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1300" y="565" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2 72" value="&lt;b&gt;Cost &amp; safety notes&lt;/b&gt;&lt;br&gt;• Gemini calls ≈ number of new unique variants (hundreds–low thousands), independent of document volume&lt;br&gt;• Use temperature 0, structured output, constrain to the canonical list; never let the LLM invent new canonicals&lt;br&gt;• Gemini outage ⇒ row kept with method=unresolved, pipeline does not stop&lt;br&gt;• Same cascade applies to medicine brand → generic mapping" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="650" width="1400" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="p3" name="3 - Scale &amp; Reliability (NFR)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3 73" value="&lt;b&gt;How 200k documents/day (400k burst) flows through the system&lt;/b&gt;&lt;br&gt;Back-of-envelope figures are estimates – the demo benchmark will replace them with measured numbers." style="text;html=1;whiteSpace=wrap;verticalAlign=top;align=left;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="5" width="1400" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="3 74" value="&lt;b&gt;Load model&lt;/b&gt;&lt;br&gt;200k docs/day = 2.3 docs/s average&lt;br&gt;400k/day burst = 4.6 docs/s&lt;br&gt;≈150 rows per doc (sample: 193 tests + 15 meds)&lt;br&gt;⇒ ~30M rows/day into BigQuery" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="70" width="330" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="3 75" value="&lt;b&gt;GCS&lt;/b&gt;&lt;br&gt;file lands" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="260" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3 76" value="&lt;b&gt;Pub/Sub&lt;/b&gt;&lt;br&gt;absorbs bursts&lt;br&gt;backlog = lag metric" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="260" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3 77" value="&lt;b&gt;Cloud Run workers&lt;/b&gt;&lt;br&gt;autoscale on queue depth&lt;br&gt;concurrency N · max-instances cap&lt;br&gt;stateless → linear scaling" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="400" y="260" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3 78" value="&lt;b&gt;Micro-batch buffer&lt;/b&gt;&lt;br&gt;~500 docs or 60 s&lt;br&gt;(avoid row-by-row inserts)" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="650" y="260" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3 79" value="&lt;b&gt;BigQuery load job&lt;/b&gt;&lt;br&gt;append to staging" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="880" y="260" width="170" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3 80" value="&lt;b&gt;MERGE&lt;/b&gt;&lt;br&gt;staging → curated&lt;br&gt;idempotent on row id" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="260" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3 81" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="3 75" target="3 76">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3 82" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="3 76" target="3 77">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3 83" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="3 77" target="3 78">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3 84" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="3 78" target="3 79">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3 85" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;endArrow=block;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="3 79" target="3 80">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3 86" value="&lt;b&gt;Latency budget – target p95 &lt; 15 min (NFR-1.2)&lt;/b&gt;&lt;br&gt;GCS notification: &lt; 1 s&lt;br&gt;Queue wait: seconds (alert if oldest-unacked &gt; 5 min)&lt;br&gt;Processing: ~1–3 s/doc (estimate, measure in demo)&lt;br&gt;Batch window: ≤ 2 min&lt;br&gt;BQ load + MERGE: ~1–2 min&lt;br&gt;⇒ comfortably inside 15 min; knobs: batch window, max-instances" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="440" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="3 87" value="&lt;b&gt;Throughput &amp; horizontal scaling (NFR-1.1 / 1.3)&lt;/b&gt;&lt;br&gt;4.6 docs/s × ~2 s ≈ 10 concurrent docs ⇒ a handful of instances&lt;br&gt;No shared state between workers (dedup/alias in Cloud SQL; config cached)&lt;br&gt;More workers ⇒ more throughput; Cloud SQL is control-plane only (not row path)&lt;br&gt;Dataflow is the upgrade path if volume grows ~10×" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="490" y="400" width="440" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="3 88" value="&lt;b&gt;Failure modes (NFR-3)&lt;/b&gt;&lt;br&gt;Malformed file → quarantine + dead_letter row, others continue&lt;br&gt;Poison message → retries ×N → DLQ topic → alert&lt;br&gt;Worker crash → redelivery; MERGE on row id ⇒ no duplicates&lt;br&gt;Gemini outage → rows flagged unresolved, pipeline continues&lt;br&gt;BQ load failure → retry, staging retained" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="960" y="400" width="460" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="3 89" value="&lt;b&gt;Clinic onboarding (NFR-2)&lt;/b&gt;&lt;br&gt;New source = YAML mapping in Git (field paths, date formats, unit aliases)&lt;br&gt;Gemini drafts the mapping from a sample file OFFLINE → engineer reviews → PR&lt;br&gt;Dry-run CLI reports test-name coverage % before go-live; schema_version in config for format changes" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="620" width="690" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="3 90" value="&lt;b&gt;Demo plan&lt;/b&gt;&lt;br&gt;Synthesise 10k–200k docs by mutating the 5 samples (typos, unit variants, duplicates, malformed)&lt;br&gt;Run multiprocess pipeline locally → report docs/s, rows/s, Gemini call count vs cache warmth&lt;br&gt;Extrapolate to 200k/day and 2× burst" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="730" y="620" width="690" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
