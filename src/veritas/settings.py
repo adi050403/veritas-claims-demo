@@ -36,8 +36,11 @@ class Settings(BaseSettings):
     bq_deadletter_table: str = Field(default="dead_letter", alias="BQ_DEADLETTER_TABLE")
 
     gemini_enabled: bool = Field(default=False, alias="GEMINI_ENABLED")
-    gemini_model: str = Field(default="gemini-2.0-flash", alias="GEMINI_MODEL")
-    vertex_location: str = Field(default="us-central1", alias="VERTEX_LOCATION")
+    gemini_model: str = Field(default="gemini-3.7-flash", alias="GEMINI_MODEL")
+    gemini_api_key: str = Field(default="", alias="GEMINI_API_KEY")
+    # False = Gemini Developer API (API key). True = Vertex AI (often needs model access).
+    gemini_use_vertex: bool = Field(default=False, alias="GEMINI_USE_VERTEX")
+    vertex_location: str = Field(default="global", alias="VERTEX_LOCATION")
 
     fuzzy_match_threshold: float = Field(default=86.0, alias="FUZZY_MATCH_THRESHOLD")
     nlp_match_threshold: float = Field(default=0.78, alias="NLP_MATCH_THRESHOLD")

@@ -47,7 +47,9 @@ def run_root(req: RunRequest = RunRequest()) -> dict[str, Any]:
 
 
 @app.post("/ai-worker/run")
-def ai_worker(limit: int = 50) -> dict[str, Any]:
+def ai_worker(limit: int = 10, req: RunRequest | None = None) -> dict[str, Any]:
+    """Resolve pending_ai names via Gemini. Body optional (Console-safe)."""
+    _ = req  # ignore Console {"name":"Developer"} payload
     settings = get_settings()
     store = get_record_store(settings)
     store.ensure_schema()

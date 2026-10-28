@@ -77,6 +77,21 @@ curl.exe -X POST "https://veritas-pipeline-233971633808.us-central1.run.app/" `
 
 `files_ok: 0` with `files_total: 5` usually means samples already completed (idempotent). Clear `gs://…/state/progress.json` to force a full reprocess.
 
+### Gemini AI worker (resolve `pending_ai`)
+
+```powershell
+# Cloud Run (note: send an empty JSON body)
+curl.exe -X POST "https://veritas-pipeline-233971633808.us-central1.run.app/ai-worker/run?limit=5" `
+  -H "Authorization: Bearer $(gcloud auth print-identity-token)" `
+  -H "Content-Type: application/json" -d "{}"
+
+# Or from laptop (uses .env GEMINI_API_KEY + BigQuery)
+$env:PYTHONPATH="D:\Niveus\veritas claims demo\src"
+python scripts\demo_gemini_resolve.py
+```
+
+Uses **Gemini Developer API** (`gemini-3.7-flash`). Main project prepaid credits were depleted — demo key is on free-tier project `veritas-gemini-ft-66840` (stored in Secret Manager `gemini-api-key`).
+
 Verified cloud run: **5 files → 442 rows** (362 lab / 74 medication / 6 discharge).
 
 ### Re-deploy from scratch
